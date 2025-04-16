@@ -38,7 +38,7 @@
   if (res.ok) {
     const data = await res.json();
     localStorage.setItem("token", data.token);
-    window.location.href = "dashboard.html";
+    window.location.href = "index3.html";
   } else {
     document.getElementById("erroLogin").classList.remove("d-none");
   }

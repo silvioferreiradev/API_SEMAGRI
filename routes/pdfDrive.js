@@ -21,7 +21,12 @@ router.post("/upload-pdf-drive", verifyToken, upload.single("pdf"), async (req, 
     const { path, originalname } = req.file;
     const result = await uploadPDFToDrive(path, originalname);
     fs.unlinkSync(path); // remove o temporário
-    res.status(200).json({ message: "Enviado com sucesso", link: result.link });
+    /* res.status(200).json({ message: "Enviado com sucesso", link: result.link }); */
+    res.status(200).json({ 
+      message: "Enviado com sucesso", 
+      link: `https://drive.google.com/file/d/${result.id}/view?usp=sharing` 
+    });
+    
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erro ao enviar PDF" });

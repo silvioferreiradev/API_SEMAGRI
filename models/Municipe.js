@@ -4,6 +4,12 @@ const MunicipeSchema = new mongoose.Schema({
     nome: { type: String, required: true },
     cpf: { type: String, required: true, unique: true },
     rg: { type: String, required: true },
+    comentarios: [
+        {
+          texto: String,
+          data: { type: Date, default: Date.now }
+        }
+      ]
 /*     dap: { type: String, required: true },
     data_nascimento: { type: Date, required: true },
     titulo_eleitor: { type: String, required: true },
