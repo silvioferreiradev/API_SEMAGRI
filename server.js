@@ -23,13 +23,8 @@ const upload = multer({
       cb(null, true);
     },
   });
-//
 
-// remover?
-const uploadRoutes = require('./routes/upload');
-app.use('/api', uploadRoutes);
 
-// remover?
 
 const app = express();
 

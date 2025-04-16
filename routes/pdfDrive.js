@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 const fs = require("fs");
 const { uploadPDFToDrive } = require("../services/googleDrive");
-const { verifyToken } = require("../middleware/auth"); // já existe no seu projeto
+const verifyToken = require("../middleware/authMiddleware");
 
 const upload = multer({
   dest: "temp/",

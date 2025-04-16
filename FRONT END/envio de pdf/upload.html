@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Envio de PDF para Google Drive</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+    }
+    label, input, button {
+      display: block;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h2>Upload de PDF para Google Drive</h2>
+
+  <label for="token">Token JWT:</label>
+  <input type="text" id="token" placeholder="Cole aqui seu token JWT" style="width: 100%;" />
+
+  <label for="file">Selecione um PDF:</label>
+  <input type="file" id="file" accept="application/pdf" />
+
+  <button onclick="enviarArquivo()">Enviar</button>
+
+  <div id="resultado" style="margin-top: 2rem;"></div>
+
+  <script>
+    async function enviarArquivo() {
+      const token = document.getElementById('token').value;
+      const file = document.getElementById('file').files[0];
+
+      if (!token || !file) {
+        alert("Informe o token e selecione um arquivo PDF.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("pdf", file);
+
+      try {
+        const response = await fetch("http://localhost:5000/api/upload-pdf-drive", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        const result = await response.json();
+        document.getElementById('resultado').innerText = JSON.stringify(result, null, 2);
+      } catch (err) {
+        console.error("Erro ao enviar:", err);
+        document.getElementById('resultado').innerText = "Erro no envio.";
+      }
+    }
+  </script>
+</body>
+</html>
