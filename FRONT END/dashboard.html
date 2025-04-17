@@ -3,91 +3,163 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Munícipes - Dashboard</title>
+  <title>Dashboard - Sistema de Munícipes</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
 </head>
-<body class="bg-white">
-
-  <div class="container py-4">
-    <h3 class="mb-4">Cadastro e Pesquisa de Munícipes</h3>
-
-    <!-- Formulário de Pesquisa -->
-    <form id="formPesquisa" class="row g-2 mb-4">
-      <div class="col-auto">
-        <input type="text" class="form-control" id="cpfBusca" placeholder="Digite o CPF">
+<body class="bg-light">
+  <div class="container py-5">
+    <h2 class="text-center mb-4">Cadastro de Munícipes</h2>
+    <form id="cadastroForm" enctype="multipart/form-data">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label class="form-label">Nome</label>
+          <input type="text" class="form-control" name="nome" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">CPF</label>
+          <input type="text" class="form-control" name="cpf" required>
+        </div>
       </div>
-      <div class="col-auto">
-        <button type="submit" class="btn btn-secondary">Pesquisar</button>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label class="form-label">RG</label>
+          <input type="text" class="form-control" name="rg" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">PDF (documento)</label>
+          <input type="file" class="form-control" name="pdf" accept="application/pdf" required>
+        </div>
       </div>
+      <button type="submit" class="btn btn-success">Cadastrar</button>
     </form>
-    <div id="resultadoBusca" class="mb-4"></div>
 
-    <!-- Cadastro -->
-    <form id="formCadastro" class="row g-3 border-top pt-4">
-      <div class="col-md-4">
-        <label class="form-label">Nome</label>
-        <input type="text" class="form-control" name="nome" required />
+    <hr class="my-5">
+
+    <h4>Buscar Munícipe</h4>
+    <div class="input-group mb-3">
+      <input type="text" class="form-control" placeholder="Digite o CPF" id="buscarCpf">
+      <button class="btn btn-primary" onclick="buscarMunicipe()">Buscar</button>
+    </div>
+
+    <div id="modalMunicipe" class="modal fade" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Dados do Munícipe</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <p><strong>Nome:</strong> <span id="nomeModal"></span></p>
+            <p><strong>CPF:</strong> <span id="cpfModal"></span></p>
+            <p><strong>RG:</strong> <span id="rgModal"></span></p>
+            <a href="#" class="btn btn-outline-primary mb-3" id="btnBaixarPdf" target="_blank">Baixar PDF</a>
+            <hr>
+            <form id="comentarioForm">
+              <div class="mb-3">
+                <label for="comentario" class="form-label">Novo Comentário</label>
+                <textarea class="form-control" id="comentario" rows="2"></textarea>
+              </div>
+              <button type="submit" class="btn btn-secondary">Salvar Comentário</button>
+            </form>
+            <div class="mt-4">
+              <h6>Histórico de Comentários</h6>
+              <ul id="listaComentarios" class="list-group"></ul>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="col-md-4">
-        <label class="form-label">CPF</label>
-        <input type="text" class="form-control" name="cpf" required />
-      </div>
-      <div class="col-md-4">
-        <label class="form-label">RG</label>
-        <input type="text" class="form-control" name="rg" required />
-      </div>
-      <div class="col-12">
-        <button type="submit" class="btn btn-success">Cadastrar</button>
-      </div>
-    </form>
+    </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Acesso negado. Faça login.");
       window.location.href = "index.html";
     }
 
-    document.getElementById("formCadastro").addEventListener("submit", async (e) => {
+    document.getElementById("cadastroForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const formData = new FormData(e.target);
-      const data = Object.fromEntries(formData.entries());
+      const form = e.target;
+      const formData = new FormData(form);
+      const jsonBody = Object.fromEntries(formData);
 
-      const res = await fetch("http://localhost:5000/api/municipes", {
+      await fetch("http://localhost:5000/api/municipes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(jsonBody)
       });
 
-      if (res.ok) {
-        alert("Munícipe cadastrado!");
-        e.target.reset();
-      } else {
-        alert("Erro ao cadastrar.");
-      }
-    });
+      const pdf = formData.get("pdf");
+      const pdfFormData = new FormData();
+      pdfFormData.append("pdf", pdf);
 
-    document.getElementById("formPesquisa").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const cpf = document.getElementById("cpfBusca").value;
-      const res = await fetch(`http://localhost:5000/api/municipes?cpf=${cpf}`, {
+      await fetch("http://localhost:5000/api/upload-pdf-drive", {
+        method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`,
-        }
+          Authorization: `Bearer ${token}`,
+        },
+        body: pdfFormData,
       });
 
-      const resultado = document.getElementById("resultadoBusca");
-      if (res.ok) {
-        const dados = await res.json();
-        resultado.innerHTML = `<div class="alert alert-success">Nome: ${dados.nome} | CPF: ${dados.cpf} | RG: ${dados.rg}</div>`;
-      } else {
-        resultado.innerHTML = `<div class="alert alert-danger">Munícipe não encontrado.</div>`;
-      }
+      alert("Munícipe cadastrado com sucesso!");
+      form.reset();
     });
+
+    async function buscarMunicipe() {
+      const cpf = document.getElementById("buscarCpf").value;
+      const res = await fetch(`http://localhost:5000/api/municipes?cpf=${cpf}`);
+      const municipe = await res.json();
+
+      document.getElementById("nomeModal").textContent = municipe.nome;
+      document.getElementById("cpfModal").textContent = municipe.cpf;
+      document.getElementById("rgModal").textContent = municipe.rg;
+      document.getElementById("btnBaixarPdf").href = `https://drive.google.com/file/d/${municipe.pdfId}/view`;
+
+      // carregar comentários
+      const comentarios = municipe.comentarios || [];
+      const lista = document.getElementById("listaComentarios");
+      lista.innerHTML = "";
+
+
+      comentarios.forEach(c => {
+  const li = document.createElement("li");
+  li.classList.add("list-group-item");
+
+  const data = new Date(c.data);
+  const dataFormatada = data.toLocaleDateString("pt-BR") + " às " + data.toLocaleTimeString("pt-BR", { hour: '2-digit', minute: '2-digit' });
+
+  li.innerHTML = `<small class="text-muted">${dataFormatada}</small><br>${c.texto}`;
+  lista.appendChild(li);
+});
+
+
+
+      const modal = new bootstrap.Modal(document.getElementById("modalMunicipe"));
+      modal.show();
+
+      // salvar novo comentário
+      document.getElementById("comentarioForm").onsubmit = async (e) => {
+  e.preventDefault();
+  const novoComentario = document.getElementById("comentario").value;
+  
+  await fetch("http://localhost:5000/api/municipes/comentario", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ cpf, comentario: novoComentario })
+  });
+
+  document.getElementById("comentario").value = ""; // limpa o campo
+  buscarMunicipe(); // recarrega os dados
+};
+
+    }
   </script>
 </body>
 </html>
