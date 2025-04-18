@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload de Documentos</title>
+</head>
+<body>
+    <h2>Envio de Documentos</h2>
+    <form id="uploadForm">
+        <label for="rg">RG (PDF):</label>
+        <input type="file" id="rg" name="rg" accept="application/pdf" required><br><br>
+
+        <label for="cpf">CPF (PDF):</label>
+        <input type="file" id="cpf" name="cpf" accept="application/pdf" required><br><br>
+
+        <label for="escritura">Escritura (PDF):</label>
+        <input type="file" id="escritura" name="escritura" accept="application/pdf" required><br><br>
+
+        <label for="declaracao_imposto">Declaração de Imposto (PDF):</label>
+        <input type="file" id="declaracao_imposto" name="declaracao_imposto" accept="application/pdf" required><br><br>
+
+        <label for="comprovante_residencia">Comprovante de Residência Rural (PDF):</label>
+        <input type="file" id="comprovante_residencia" name="comprovante_residencia" accept="application/pdf" required><br><br>
+
+        <label for="cadastro_ambiental">Cadastro Ambiental Rural (PDF):</label>
+        <input type="file" id="cadastro_ambiental" name="cadastro_ambiental" accept="application/pdf" required><br><br>
+
+        <button type="submit">Enviar Documentos</button>
+    </form>
+
+    <script>
+        document.getElementById('uploadForm').onsubmit = async function(event) {
+            event.preventDefault();
+            const formData = new FormData();
+
+            formData.append('rg', document.getElementById('rg').files[0]);
+            formData.append('cpf', document.getElementById('cpf').files[0]);
+            formData.append('escritura', document.getElementById('escritura').files[0]);
+            formData.append('declaracao_imposto', document.getElementById('declaracao_imposto').files[0]);
+            formData.append('comprovante_residencia', document.getElementById('comprovante_residencia').files[0]);
+            formData.append('cadastro_ambiental', document.getElementById('cadastro_ambiental').files[0]);
+
+            try {
+                const response = await fetch('http://seu-servidor.com/api/upload-pdf', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Authorization': 'Bearer SEU_TOKEN_AQUI'
+                    }
+                });
+
+                if (response.ok) {
+                    alert('Documentos enviados com sucesso!');
+                } else {
+                    alert('Erro ao enviar documentos.');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao enviar documentos.');
+            }
+        };
+    </script>
+</body>
+</html>
