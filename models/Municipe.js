@@ -5,6 +5,7 @@ const MunicipeSchema = new mongoose.Schema({
     cpf: { type: String, required: true, unique: true },
     rg: { type: String, required: true },
     pdfId: { type: String },
+
     endereco: { type: String, required: true },
     numero: { type: String, required: true },
     bairro: { type: String, required: true },
@@ -14,7 +15,8 @@ const MunicipeSchema = new mongoose.Schema({
 
     comentarios: [
         {
-          texto: String,
+          comentario: String,
+          categoria: { type: String, required: true }, 
           data: { type: Date, default: Date.now }
         }
       ]
