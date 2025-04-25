@@ -55,6 +55,8 @@ router.post("/comentario", authMiddleware, async (req, res) => {
         // Encontre o munícipe pelo CPF
         const municipe = await Municipe.findOne({ cpf });
 
+        console.log("Munícipe encontrado:", municipe);
+
         if (!municipe) {
             return res.status(404).json({ message: "Munícipe não encontrado." });
         }
@@ -62,8 +64,8 @@ router.post("/comentario", authMiddleware, async (req, res) => {
         // Adicionar o comentário com a categoria
  
 
-
-        municipe.comentarios.push({ texto: comentario, categoria : categoriaFinal, data: new Date() });
+        console.log("Antes de salvar, municipe:", municipe);
+        municipe.comentarios.push({ texto: comentario, categoria: categoriaFinal, data: new Date() });
         await municipe.save();
 
 

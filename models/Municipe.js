@@ -15,7 +15,7 @@ const MunicipeSchema = new mongoose.Schema({
 
     comentarios: [
         {
-          comentario: String,
+          texto: String,
           categoria: { type: String, required: true }, 
           data: { type: Date, default: Date.now }
         }
