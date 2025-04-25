@@ -1,7 +1,7 @@
 const express = require("express");
 const Municipe = require("../models/Municipe");
 const authMiddleware = require("../middleware/authMiddleware");
-
+const municipeController = require('../controllers/municipeController');
 const router = express.Router();
 
 // Criar um novo munícipe
@@ -68,6 +68,10 @@ router.post("/comentario", authMiddleware, async (req, res) => {
         municipe.comentarios.push({ texto: comentario, categoria: categoriaFinal, data: new Date() });
         await municipe.save();
 
+
+        // Buscando comentário por categoria
+
+        router.get('/comentarios/categoria', municipeController.buscarComentariosPorCategoria);
 
 
         // Resposta de sucesso

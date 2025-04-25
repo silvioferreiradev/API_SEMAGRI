@@ -37,3 +37,31 @@ exports.buscarPorCpf = async (req, res) => {
     res.status(500).json({ message: 'Erro ao buscar munícipe', error });
   }
 };
+
+
+// Buscar comentários por categoria
+exports.buscarComentariosPorCategoria = async (req, res) => {
+  try {
+      const { categoria } = req.query;
+
+      // Encontrar municipes que tenham comentários com a categoria especificada
+      const municipes = await Municipe.find({ 'comentarios.categoria': categoria });
+
+      // Mapear os resultados para o formato desejado
+      const comentariosFiltrados = municipes.flatMap(municipe => {
+          return municipe.comentarios
+              .filter(comentario => comentario.categoria === categoria)
+              .map(comentario => ({
+                  nome: municipe.nome,
+                  cpf: municipe.cpf,
+                  categoria: comentario.categoria,
+                  texto: comentario.texto,
+              }));
+      });
+
+      res.status(200).json(comentariosFiltrados);
+  } catch (error) {
+      console.error('Erro ao buscar comentários por categoria:', error);
+      res.status(500).json({ message: 'Erro ao buscar comentários por categoria', error });
+  }
+};

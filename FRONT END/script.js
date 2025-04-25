@@ -114,13 +114,54 @@
       });
     }
 
-    // Stub para buscar ordens de serviço
+/*     // Stub para buscar ordens de serviço
     function buscarOrdemServico() {
       const cat = document.getElementById("buscarOrdem").value;
       if (!cat) return alert("Selecione uma categoria");
       // aqui você implementa a real busca de OS...
       alert("Buscando ordens de serviço de " + cat);
+    } */
+
+
+// Stub para buscar ordens de serviço
+async function buscarOrdemServico() {
+    const cat = document.getElementById("buscarOrdem").value;
+    if (!cat) return alert("Selecione uma categoria");
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/municipes/comentarios/categoria?categoria=${cat}`);
+      if (!res.ok) throw new Error("Erro ao buscar comentários");
+      const comentarios = await res.json();
+
+      // Limpar o conteúdo do modal
+      const modalBody = document.getElementById("modalOrdemServicoBody");
+      modalBody.innerHTML = "";
+
+      if (comentarios.length === 0) {
+          modalBody.innerHTML = "<p>Nenhum comentário encontrado para esta categoria.</p>";
+      } else {
+        // Adicionar os resultados ao modal
+        comentarios.forEach(c => {
+          const item = document.createElement("div");
+          item.innerHTML = `
+            <p><strong>Nome:</strong> ${c.nome}</p>
+            <p><strong>CPF:</strong> ${c.cpf}</p>
+            <p><strong>Categoria:</strong> ${c.categoria}</p>
+            <p><strong>Comentário:</strong> ${c.texto}</p>
+            <hr>
+          `;
+          modalBody.appendChild(item);
+        });
+      }
+
+      // Exibir o modal
+      const modal = new bootstrap.Modal(document.getElementById("modalOrdemServico"));
+      modal.show();
+    } catch (error) {
+      alert(error.message);
     }
+  }
+
 
     // Placeholder para “editar campo” (você pode implementar inline editing)
     function editarCampo(campo) {
