@@ -2,13 +2,13 @@
 const mongoose = require("mongoose");
 const User = require("../models/User"); // ajuste o caminho se necessário
 
-const uri = "mongodb+srv://jssilvioferreira:39256516@cluster0.wvnqve4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri = "mongodb+srv://EMAIL:SENHA@cluster0.wvnqve4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 mongoose.connect(uri).then(async () => {
   const novoUsuario = new User({
     nome: "admin",
     email: "admin@semagri.com.br",
-    senha: "1234",
+    senha: "",
     role: "admin"
   });
 
