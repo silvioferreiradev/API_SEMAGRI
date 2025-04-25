@@ -63,6 +63,7 @@
         document.getElementById("comentario").value = "";
         document.getElementById("categoria").value = "";
         carregarComentarios(); // atualizar lista
+        buscarMunicipe();
       } catch (err) {
         alert(err.message);
       }
@@ -89,6 +90,7 @@
 
         // mostrar comentários
         carregarComentarios(m.comentarios);
+        
 
         const modal = new bootstrap.Modal(document.getElementById("modalMunicipe"));
         modal.show();
